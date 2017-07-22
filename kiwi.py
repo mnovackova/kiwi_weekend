@@ -4,7 +4,7 @@ from datetime import datetime
 from pprint import pprint
 from bs4 import BeautifulSoup
 
-#python kiwi.py --from Praha --to Brno --date 2017-07-22
+#python kiwi.py --from Brno --to Prague --date 2017-07-22
 
 @click.command()
 @click.option('--from', 'from_')
@@ -14,51 +14,43 @@ def url(from_, date, to):
     '''Preparing request.'''
     date_parsed =  datetime.strptime(date, '%Y-%m-%d').strftime('%Y%m%d')
     session = requests.Session()
-    #    1. request en - sesion ID
     r = session.get('https://www.regiojet.com/en/')
     print(r.status_code)
     print(r.headers['content-type'])
 
-    #2. request aby vratil json destination-en.json
     id_cities_get = session.get('https://www.studentagency.cz/data/wc/ybus-form/destinations-en.json')
     id_cities_json = id_cities_get.json()
 
-    for number in id_cities_json['destinations']:
-        for cities in number:
-            for cities_number in cities['cities']:
-                print(cities_number)
-                '''
-                if cities_number['cities']['name'] == from_:
-                    print(cities_number['cities']['name'])
-                    #from_id = cities_number['id']
-                '''
+    for destination in id_cities_json['destinations']:
+        for city in destination['cities']:
+            if city['name'] == from_:
+                print(city['id'], city['name'])
+                from_id = city['id']
 
-    '''
-    for number in id_cities_json['destinations']:
-        for cities in number:
-            for cities_number in cities:
-                if cities_number['name'] == to:
-                    to_id = cities_number['id']
+    for destination in id_cities_json['destinations']:
+        for city in destination['cities']:
+            if city['name'] == to:
+                print(city['id'], city['name'])
+                to_id = city['id']
 
-    print(from_id, to_id)
-    '''
-
-    '''
-    soup = BeautifulSoup(r.text, 'html.parser')
-    soup.find_all('li', class_='toclevel-1')
-    #input id="destination_to"
-    # soup.select('li.toclevel-1')
-
-    3. request respons body
-    '''
-    '''
-    from_ = 10202002 #Brno
-    to = 10202003 #praha
-    r = requests.get('https://bustickets.regiojet.com/Booking/from/{}/to/{}/tarif/REGULAR/departure/{}/retdep/{}/return/false'.format(from_id, to_id, date_parsed, date_parsed))
+    #url = 'https://jizdenky.regiojet.cz/Booking/from/10202002/to/10202003/tarif/REGULAR/departure/20170722/retdep/20170722/return/false?0'
+    url = 'https://jizdenky.regiojet.cz/Booking/from/{}/to/{}/tarif/REGULAR/departure/{}/retdep/{}/return/false?0'.format(from_id, to_id, date_parsed, date_parsed)
+    r = session.get(url)
+    #url = 'https://jizdenky.regiojet.cz/Booking/from/10202002/to/10202003/tarif/REGULAR/departure/20170722/retdep/20170722/return/false?0-1.IBehaviorListener.0-mainPanel-routesPanel&_=0'
+    url = 'https://jizdenky.regiojet.cz/Booking/from/{}/to/{}/tarif/REGULAR/departure/{}/retdep/{}/return/false?0-1.IBehaviorListener.0-mainPanel-routesPanel&_=0'.format(from_id, to_id, date_parsed, date_parsed)
+    r = session.get(url)
     print(r.status_code)
     print(r.headers['content-type'])
+    print(url)
     #print(r.headers['content-type'])
-    '''
+
+    print(r.text)
+
+    soup = BeautifulSoup(r.text, 'html.parser')
+    time_departure = soup.find_all('div', class_="col_depart gray_gradient", limit=1)
+    print(time_departure)
+    import pdb; pdb.set_trace()
+
 
 '''
 [{
