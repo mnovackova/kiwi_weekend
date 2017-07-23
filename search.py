@@ -25,12 +25,12 @@ def search(from_, to, date):
     }
 
     conn = psycopg2.connect(**db_config)
-    cur = conn.cursor(cursor_factory=pg2.DictCursor)
+    cur = conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor)
     cur.execute('SELECT * FROM connections_marketa_novackova')
     database_search = cur.fetchall()
     pprint(database_search)
     for item in database_search:
-        if item[1].date() == date_preparsed.date() and item[3] == from_ and item[4] == to:
+        if item['departure'].date() == date_preparsed.date() and item['src'] == from_ and item['dst'] == to:
             print(item)
             return item
 
