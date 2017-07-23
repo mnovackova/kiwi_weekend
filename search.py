@@ -13,8 +13,8 @@ import psycopg2.extras as pg2
 
 def search(from_, to, date):
     '''Preparing request and return search data'''
-
-    date_parsed =  datetime.strptime(date, '%Y-%m-%d').strftime('%Y%m%d')
+    date_preparsed = datetime.strptime(date, '%Y-%m-%d')
+    date_parsed =  date_preparsed.strftime('%Y%m%d')
 
     db_config = {
         'host': '5.135.242.245',
@@ -30,7 +30,7 @@ def search(from_, to, date):
     database_search = cur.fetchall()
     pprint(database_search)
     for item in database_search:
-        if item[1].date() == date_parsed and item[3] == from_ and item[4] == to:
+        if item[1].date() == date_preparsed.date() and item[3] == from_ and item[4] == to:
             print(item)
             return item
 
@@ -68,7 +68,18 @@ def search(from_, to, date):
         "to_id": to_id # optional (student agency id)
     }]
     pprint(stdout[0])
+    database_add(stdout[0], cur, conn)
     return stdout[0]
+
+
+def database_add(stdout, cur, conn):
+    cur.execute(
+            """INSERT INTO connections_marketa_novackova (departure, arrival, src, dst, free_seats, price)
+               VALUES (%(departure)s, %(arrival)s, %(from_)s, %(to)s, %(free_seats)s, %(price)s);
+            """,
+            {'departure': stdout['departure'], 'arrival': stdout['arrival'], 'from_': stdout['from'], 'to': stdout['to'], 'free_seats': stdout['free_seats'], 'price': stdout['price']}
+        )
+    conn.commit()
 
 
 def datetime_dep_arr(date, soup, dep_arr):
