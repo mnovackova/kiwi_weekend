@@ -1,9 +1,11 @@
 <html>
   <body>
-    Nejlepší spoj:</br></br>
+    <u>Nejlepší spoj:</u></br></br>
 
-    {% for key, value in result.items() %}
-      {{ key }} : {{ value }}  </br>
-    {% endfor %}
+    Z: {{ result['src'] }} </br>
+    Do: {{ result['dst'] }} </br>
+    {{ result['departure'] }} - {{ result['arrival'] }} </br>
+    Cena: {{ result['price'] }} Kč</br>
+    Počet volných míst: {{ result['free_seats'] }} </br>
   </body>
 </html>

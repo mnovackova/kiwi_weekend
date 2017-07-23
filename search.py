@@ -59,13 +59,13 @@ def search(from_, to, date):
     stdout = [{
         "departure": departure,
         "arrival": arrival,
-        "from": from_,
-        "to": to,
+        "src": from_,
+        "dst": to,
         "free_seats": int(free_seats),
         "price": int(price[1:4]),
         #"type": "train", # optional (train/bus)
-        "from_id": from_id, # optional (student agency id)
-        "to_id": to_id # optional (student agency id)
+        #"from_id": from_id, # optional (student agency id)
+        #"to_id": to_id # optional (student agency id)
     }]
     pprint(stdout[0])
     database_add(stdout[0], cur, conn)
@@ -75,9 +75,9 @@ def search(from_, to, date):
 def database_add(stdout, cur, conn):
     cur.execute(
             """INSERT INTO connections_marketa_novackova (departure, arrival, src, dst, free_seats, price)
-               VALUES (%(departure)s, %(arrival)s, %(from_)s, %(to)s, %(free_seats)s, %(price)s);
+               VALUES (%(departure)s, %(arrival)s, %(src)s, %(dst)s, %(free_seats)s, %(price)s);
             """,
-            {'departure': stdout['departure'], 'arrival': stdout['arrival'], 'from_': stdout['from'], 'to': stdout['to'], 'free_seats': stdout['free_seats'], 'price': stdout['price']}
+            {'departure': stdout['departure'], 'arrival': stdout['arrival'], 'src': stdout['src'], 'dst': stdout['dst'], 'free_seats': stdout['free_seats'], 'price': stdout['price']}
         )
     conn.commit()
 
