@@ -5,11 +5,32 @@ from bs4 import BeautifulSoup
 from redis import StrictRedis
 import unidecode
 import re
+import psycopg2
+import psycopg2.extras as pg2
+
 
 
 #python kiwi.py --from Brno --to Prague --date 2017-07-22
 
 def search(from_, to, date):
+    '''
+    zavola databazi a podiva se:
+
+    a jinak pouzije vyhledavani:
+    '''
+    db_config = {
+        'host': '5.135.242.245',
+        'user': 'kiwi',
+        'password': 'kiwi',
+        'port': 5432
+        'dbname': 'kiwi_weekend'
+        }
+
+    conn = psycopg2.connect(**db_config)
+    cur = conn.cursor(cursor_factory=pg2.DictCursor)
+    cur.execute('SELECT * FROM connections_marketa_novackova')
+    cur.fetchall()
+
     '''Preparing request.'''
     date_parsed =  datetime.strptime(date, '%Y-%m-%d').strftime('%Y%m%d')
     session = requests.Session()

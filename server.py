@@ -4,7 +4,7 @@
 
 from flask import Flask, render_template
 from flask import request
-import search
+from search import search
 
 
 
@@ -18,11 +18,11 @@ def ping():
 # http://127.0.0.1:5000/search?from_=Brno&to=Ostrava&date=2017-09-09
 # http://127.0.0.1:5000/search?from_=Brno&to=Ostrava&date=2017-07-22
 @app.route('/search', methods=['GET'])
-def search():
+def data():
   date = request.args.get('date')
   from_ = request.args.get('from_')
   to =  request.args.get('to')
-  result = search.search(from_, to, date)
+  result = search(from_, to, date)
   return render_template('index.html', result=result)
 
 
