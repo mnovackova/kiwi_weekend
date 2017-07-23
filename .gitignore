@@ -1,1 +1,4 @@
 venv
+__pycache__
+.cache
+kiwi-find_all.py
