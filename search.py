@@ -9,27 +9,34 @@ import psycopg2
 import psycopg2.extras as pg2
 
 
-
 #python kiwi.py --from Brno --to Prague --date 2017-07-22
 
 def search(from_, to, date):
-    '''
-    zavola databazi a podiva se:
 
-    a jinak pouzije vyhledavani:
-    '''
     db_config = {
         'host': '5.135.242.245',
         'user': 'kiwi',
         'password': 'kiwi',
-        'port': 5432
+        'port': 5432,
         'dbname': 'kiwi_weekend'
-        }
+    }
 
     conn = psycopg2.connect(**db_config)
     cur = conn.cursor(cursor_factory=pg2.DictCursor)
     cur.execute('SELECT * FROM connections_marketa_novackova')
-    cur.fetchall()
+    a = cur.fetchall()
+    print(a)
+    cur.execute(
+        """INSERT INTO connections_marketa_novackova (departure, arrival, src, dst, free_seats, price)
+           VALUES (%(date)s, %(date)s, %(str)s, %(str)s, %(int)s, %(int)s);
+        """,
+        {'date': datetime(2005, 11, 18, 10, 30), 'date': datetime(2005, 11, 18, 11, 30), 'str': "O'Reilly", 'str': "O'Reilly", 'int': 10, 'int': 10}
+    )
+    conn.commit()
+    cur.execute('SELECT * FROM connections_marketa_novackova')
+    a = cur.fetchall()
+    print(a)
+    #import pdb; pdb.set_trace()
 
     '''Preparing request.'''
     date_parsed =  datetime.strptime(date, '%Y-%m-%d').strftime('%Y%m%d')
@@ -95,7 +102,6 @@ def get_city_id(to, from_, session):
         from_id = redis.get('city_id_{}'.format(slugify(from_)))
         to_id = redis.get('city_id_{}'.format(slugify(to)))
         print('REDIT USED')
-        #import pdb; pdb.set_trace()
     else:
         id_cities_get = session.get('https://www.studentagency.cz/data/wc/ybus-form/destinations-en.json')
         id_cities_json = id_cities_get.json()
