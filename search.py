@@ -9,7 +9,7 @@ import psycopg2
 import psycopg2.extras as pg2
 
 
-#python kiwi.py --from Brno --to Prague --date 2017-07-22
+#python kiwi.py --from Brno --to Prague --date 2017-07-25
 
 def search(from_, to, date):
     '''Preparing request and return search data'''
