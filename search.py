@@ -12,6 +12,9 @@ import psycopg2.extras as pg2
 #python kiwi.py --from Brno --to Prague --date 2017-07-22
 
 def search(from_, to, date):
+    '''Preparing request and return search data'''
+
+    date_parsed =  datetime.strptime(date, '%Y-%m-%d').strftime('%Y%m%d')
 
     db_config = {
         'host': '5.135.242.245',
@@ -24,22 +27,14 @@ def search(from_, to, date):
     conn = psycopg2.connect(**db_config)
     cur = conn.cursor(cursor_factory=pg2.DictCursor)
     cur.execute('SELECT * FROM connections_marketa_novackova')
-    a = cur.fetchall()
-    print(a)
-    cur.execute(
-        """INSERT INTO connections_marketa_novackova (departure, arrival, src, dst, free_seats, price)
-           VALUES (%(date)s, %(date)s, %(str)s, %(str)s, %(int)s, %(int)s);
-        """,
-        {'date': datetime(2005, 11, 18, 10, 30), 'date': datetime(2005, 11, 18, 11, 30), 'str': "O'Reilly", 'str': "O'Reilly", 'int': 10, 'int': 10}
-    )
-    conn.commit()
-    cur.execute('SELECT * FROM connections_marketa_novackova')
-    a = cur.fetchall()
-    print(a)
-    #import pdb; pdb.set_trace()
+    database_search = cur.fetchall()
+    pprint(database_search)
+    for item in database_search:
+        if item[1].date() == date_parsed and item[3] == from_ and item[4] == to:
+            print(item)
+            return item
 
-    '''Preparing request.'''
-    date_parsed =  datetime.strptime(date, '%Y-%m-%d').strftime('%Y%m%d')
+
     session = requests.Session()
     r = session.get('https://www.regiojet.com/en/')
 
@@ -72,11 +67,12 @@ def search(from_, to, date):
         "from_id": from_id, # optional (student agency id)
         "to_id": to_id # optional (student agency id)
     }]
-    pprint(stdout)
-    return stdout
+    pprint(stdout[0])
+    return stdout[0]
 
 
 def datetime_dep_arr(date, soup, dep_arr):
+    ''' Make datetime from date and time '''
     date = datetime.strptime(date, '%Y-%m-%d').date()
 
     time_soup = soup.find('div', class_=dep_arr).text
@@ -85,6 +81,7 @@ def datetime_dep_arr(date, soup, dep_arr):
 
 
 def get_city_id_json(id_cities_json, from_or_to):
+    ''' Retrun city ID from json '''
     for destination in id_cities_json['destinations']:
         for city in destination['cities']:
             if city['name'] == from_or_to:
@@ -92,6 +89,7 @@ def get_city_id_json(id_cities_json, from_or_to):
 
 
 def get_city_id(to, from_, session):
+    ''' Return city ID from redis or from json from web '''
     redis_config = {
         'host': '37.139.6.125',
         'password': 'wuaei44INlFurP2qMlng89HmH38',
