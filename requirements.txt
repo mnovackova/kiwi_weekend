@@ -14,7 +14,7 @@ redis==2.10.5
 requests==2.18.1
 Unidecode==0.4.21
 urllib3==1.21.1
-Werkzeug==0.12.2
+Werkzeug==0.15.3
 beautifulsoup4==4.6.0
 certifi==2017.4.17
 chardet==3.0.4
@@ -31,4 +31,4 @@ redis==2.10.5
 requests==2.18.1
 Unidecode==0.4.21
 urllib3==1.21.1
-Werkzeug==0.12.2
+Werkzeug==0.15.3
